@@ -2,7 +2,7 @@ import Link from 'next/link';
 
 const links = [
   ['Dashboard', '/dashboard'],
-  ['Lead Explorer', '/explorer'],
+  ['Lead Explorer', '/leads'],
   ['Saved Searches', '/saved-searches'],
   ['Alerts', '/alerts'],
   ['Settings', '/settings']

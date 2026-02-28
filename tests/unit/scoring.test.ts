@@ -1,10 +1,10 @@
 import { describe, expect, it } from 'vitest';
-import { computeLeadScore } from '@/lib/scoring';
-import { demoOrganizations, demoSignals } from '@/lib/data';
+import { scoreLead } from '@/server/domain/lead-scoring';
+import { demoOrganizations, demoSignals } from '@/server/domain/fixtures';
 
-describe('computeLeadScore', () => {
+describe('scoreLead', () => {
   it('returns bounded score and breakdown', () => {
-    const result = computeLeadScore(demoOrganizations[0], demoSignals, 'TX');
+    const result = scoreLead(demoOrganizations[0], demoSignals, 'TX');
     expect(result.score).toBeLessThanOrEqual(100);
     expect(result.breakdown.length).toBeGreaterThan(0);
   });
