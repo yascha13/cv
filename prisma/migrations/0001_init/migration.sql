@@ -1,0 +1,2 @@
+-- Initial schema for WealthSignal MVP
+-- Run via prisma migrate in a real environment.
