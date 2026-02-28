@@ -37,6 +37,7 @@ model Organization {
   updatedAt        DateTime    @updatedAt
   location         Location?
   signals          Signal[]
+  leadScores       LeadScore[]
   notes            Note[]
   tasks            Task[]
   tags             Tag[]
@@ -63,6 +64,18 @@ model Signal {
   payloadJson     Json
   createdAt       DateTime     @default(now())
   organization    Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+}
+
+
+model LeadScore {
+  id             String       @id @default(cuid())
+  organizationId String
+  score          Int
+  breakdownJson  Json
+  computedAt     DateTime     @default(now())
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  @@index([organizationId, computedAt])
 }
 
 model SavedSearch {

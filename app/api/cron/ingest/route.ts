@@ -1,4 +1,4 @@
-import { runIngestionJobs } from '@/lib/jobs/ingest';
+import { runIngestionJobs } from '@/server/domain/ingestion-service';
 import { NextResponse } from 'next/server';
 
 export async function GET() {
