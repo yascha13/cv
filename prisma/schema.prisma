@@ -1,0 +1,137 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String        @id @default(cuid())
+  name          String?
+  email         String        @unique
+  passwordHash  String?
+  consentNotes  String?
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+  savedSearches SavedSearch[]
+  leadLists     LeadList[]
+  notes         Note[]
+  tasks         Task[]
+  auditLogs     AuditLog[]
+}
+
+model Organization {
+  id               String      @id @default(cuid())
+  name             String
+  naics            String?
+  industry         String?
+  revenueBand      String?
+  employeeBand     String?
+  registrationDate DateTime?
+  founderLed       Boolean?
+  privateCompany   Boolean?
+  deletedAt        DateTime?
+  createdAt        DateTime    @default(now())
+  updatedAt        DateTime    @updatedAt
+  location         Location?
+  signals          Signal[]
+  notes            Note[]
+  tasks            Task[]
+  tags             Tag[]
+}
+
+model Location {
+  id             String       @id @default(cuid())
+  organizationId String       @unique
+  state          String
+  metro          String?
+  city           String?
+  country        String       @default("US")
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+}
+
+model Signal {
+  id              String       @id @default(cuid())
+  organizationId  String
+  type            String
+  source          String
+  sourceUrl       String?
+  eventDate       DateTime
+  confidenceScore Float        @default(0.5)
+  payloadJson     Json
+  createdAt       DateTime     @default(now())
+  organization    Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+}
+
+model SavedSearch {
+  id          String   @id @default(cuid())
+  userId      String
+  name        String
+  filtersJson Json
+  emailAlerts Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model LeadList {
+  id          String        @id @default(cuid())
+  userId      String
+  name        String
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+  user        User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  memberships ListMember[]
+}
+
+model ListMember {
+  id             String       @id @default(cuid())
+  leadListId     String
+  organizationId String
+  leadList       LeadList     @relation(fields: [leadListId], references: [id], onDelete: Cascade)
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  @@unique([leadListId, organizationId])
+}
+
+model Note {
+  id             String       @id @default(cuid())
+  userId         String
+  organizationId String
+  content        String
+  createdAt      DateTime     @default(now())
+  user           User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+}
+
+model Task {
+  id             String       @id @default(cuid())
+  userId         String
+  organizationId String
+  title          String
+  dueDate        DateTime?
+  completed      Boolean      @default(false)
+  createdAt      DateTime     @default(now())
+  user           User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+}
+
+model Tag {
+  id             String       @id @default(cuid())
+  organizationId String
+  label          String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+}
+
+model AuditLog {
+  id         String   @id @default(cuid())
+  userId     String?
+  action     String
+  entityType String
+  entityId   String
+  metadata   Json?
+  timestamp  DateTime @default(now())
+  user       User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+}
